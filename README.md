@@ -6,7 +6,7 @@ A lightweight, pre-configured implementation of the [Monaco Editor](https://gith
 
 The editor relies on the compiled Monaco core library. Follow these steps to set up the dependencies:
 
-1.  **Extract the Library:** Unpack your `monaco-editor.tgz` file using [7-Zip](https://www.7-zip.org) or the terminal command:
+1.  **Extract the Library:** Unpack your `monaco-editor.tgz` file (NOT SRC) using [7-Zip](https://www.7-zip.org) or the terminal command:
     ```
     bash
     tar -xvf monaco-editor.tgz
