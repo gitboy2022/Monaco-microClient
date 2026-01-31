@@ -1,0 +1,15 @@
+Monaco microClient
+Copyright © 2026 Brian Ou. All rights reserved.
+
+This product includes software developed by Brian Ou.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this product except in compliance with the License.
+You may obtain a copy of the License at:
+https://www.apache.org/licenses/LICENSE-2.0
+
+This product includes software from the Monaco Editor project developed
+by Microsoft Corporation.
+Official Project: https://github.com/microsoft/monaco-editor/tree/main
+
+Copyright © 2016–2026 Microsoft Corporation.
+Licensed under the MIT License: https://github.com/microsoft/monaco-editor/blob/main/LICENSE.txt
