@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Monaco microClient by Brian Ou</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="editor-header">Monaco microClient by Brian Ou</div>
+        <div class="tabs-bar">
+            <div class="tabs-container" id="tabs-list"></div>
+            <div class="add-tab-btn" onclick="addNewTab()" title="New Tab (Ctrl+N)">+</div>
+        </div>
+        <div id="monaco-root"></div>
+        <div class="status-bar">
+            <div class="status-left">
+                <div class="status-item" onclick="openFile()">Open</div>
+                <div class="status-item" onclick="adaptiveSave()">Save</div>
+                <div class="status-item" onclick="saveFileAs()">Save As...</div>
+                <div class="status-item">
+                    <span id="sb-filename">untitled.txt</span>
+                    <span id="dirty-indicator" style="margin-left:5px; color:#ffeb3b; display:none;">●</span>
+                </div>
+            </div>
+            <div class="status-right">
+                <div class="status-item checkbox-container">
+                    <input type="checkbox" id="word-wrap" onchange="updateWordWrap()">
+                    <label for="word-wrap" style="cursor:pointer">Word Wrap</label>
+                </div>
+                <div class="status-item checkbox-container">
+                    <input type="checkbox" id="auto-save-toggle" checked>
+                    <label for="auto-save-toggle" style="cursor:pointer">Auto Save for EXISTING FILES ONLY</label>
+                </div>
+                <div class="status-item checkbox-container">
+                    <input type="checkbox" id="format-on-save">
+                    <label for="format-on-save" style="cursor:pointer">Format on Save</label>
+                </div>
+                <div class="status-item" id="cursor-pos">Ln 1, Col 1</div>
+                <div class="status-item" onclick="toggleMenu(event, 'indent-menu')">
+                    <span id="indent-display">Spaces: 4</span>
+                    <div class="dropdown-menu" id="indent-menu" onclick="event.stopPropagation()">
+                        <div class="dropdown-item"><span>Indent:</span><input type="number" class="indent-input" id="custom-indent" value="4" onchange="setIndent(this.value)">
+                        </div>
+                        <div class="dropdown-item" onclick="setIndent(2)">Use 2</div>
+                        <div class="dropdown-item" onclick="setIndent(4)">Use 4</div>
+                    </div>
+                </div>
+                <div class="status-item" onclick="toggleMenu(event, 'lang-menu')">
+                    <span id="lang-display">Plain Text</span>
+                    <div class="dropdown-menu" id="lang-menu" style="max-height: 400px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./vs/loader.js"></script>
+    <script src="./index.js"></script>
+</body>
+
+</html>

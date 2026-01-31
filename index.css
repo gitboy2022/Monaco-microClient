@@ -1,0 +1,201 @@
+:root {
+    --bg: #1e1e1e;
+    --vscode-blue: #007acc;
+    --tab-bg: #2d2d2d;
+    --tab-active: #1e1e1e;
+    --tab-border: #252525;
+    --text-dim: #9aa0a6;
+    --dropdown-bg: #252526;
+    --dropdown-border: #454545;
+}
+
+body,
+html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: #eee;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.editor-header {
+    background: #1e1e1e;
+    color: #ffffffff;
+    font-size: 11px;
+    padding: 4px 12px;
+    border-bottom: 1px solid #252525;
+    text-align: center;
+    user-select: none;
+}
+
+/* VS Code Style Square Tabs */
+.tabs-bar {
+    background: #252526;
+    display: flex;
+    align-items: center;
+    height: 35px;
+    border-bottom: 1px solid var(--tab-border);
+}
+
+.tabs-container {
+    display: flex;
+    height: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tab {
+    background: var(--tab-bg);
+    padding: 0 15px;
+    border-right: 1px solid var(--tab-border);
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    min-width: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    height: 100%;
+    position: relative;
+    box-sizing: border-box;
+    border-top: 3px solid transparent;
+}
+
+.tab.active {
+    background: var(--tab-active);
+    color: white;
+    border-top: 3px solid var(--vscode-blue);
+}
+
+.tab:hover:not(.active) {
+    background: #2d2d2d;
+    color: white;
+}
+
+.close-tab {
+    font-size: 14px;
+    opacity: 0.5;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-tab:hover {
+    background: #444;
+    opacity: 1;
+    border-radius: 3px;
+}
+
+.add-tab-btn {
+    font-size: 18px;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 0 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+#monaco-root {
+    flex: 1;
+    background: var(--bg);
+}
+
+/* Blue Status Bar */
+.status-bar {
+    height: 22px;
+    background: var(--vscode-blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+    font-size: 12px;
+    color: white;
+    order: 3;
+}
+
+.status-left,
+.status-right {
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    cursor: pointer;
+    height: 100%;
+    position: relative;
+}
+
+.status-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.dropdown-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background: var(--dropdown-bg);
+    border: 1px solid var(--dropdown-border);
+    min-width: 180px;
+    display: none;
+    flex-direction: column;
+    padding: 4px 0;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.dropdown-item {
+    padding: 5px 15px;
+    cursor: pointer;
+    font-size: 11px;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dropdown-item:hover {
+    background: #094771;
+    color: white;
+}
+
+.status-item.active-menu .dropdown-menu {
+    display: flex;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    padding: 0 5px;
+}
+
+input[type="checkbox"] {
+    cursor: pointer;
+    margin: 0;
+}
+
+.indent-input {
+    background: #3c3c3c;
+    border: 1px solid #555;
+    color: white;
+    width: 45px;
+    font-size: 11px;
+    text-align: center;
+}
