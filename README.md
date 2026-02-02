@@ -26,4 +26,5 @@ Monaco-microClient/
 ├── index.css                   # Editor styling
 ├── README.md                   # Documentation
 ├── LICENSE                     # License terms
-└── NOTICE                      # Credits and legal notices
+├── NOTICE                      # Credits and legal notices
+└── Difference-Checker.html     # Difference checking software
