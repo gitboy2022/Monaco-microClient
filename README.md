@@ -21,7 +21,7 @@ Ensure all 7 core items are organized as follows for the internal links to resol
 ```text
 Monaco-microClient/
 ├── vs/                         # Extracted core library (loader.js, etc.)
-├── Monaco microClient.html     # Main editor entry point
+├── Monaco-microClient.html     # Main editor entry point
 ├── index.js                    # Pre-configured logic (points to vs/)
 ├── index.css                   # Editor styling
 ├── README.md                   # Documentation
