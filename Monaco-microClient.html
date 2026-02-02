@@ -24,8 +24,12 @@
                     <span id="sb-filename">untitled.txt</span>
                     <span id="dirty-indicator" style="margin-left:5px; color:#ffeb3b; display:none;">●</span>
                 </div>
+                <div class="status-item" onclick="openDifferenceViewer()">
+                    <label for="open-difference-viewer" style="cursor:pointer">Open Difference Viewer</label>
+                </div>
             </div>
             <div class="status-right">
+
                 <div class="status-item checkbox-container">
                     <input type="checkbox" id="word-wrap" onchange="updateWordWrap()">
                     <label for="word-wrap" style="cursor:pointer">Word Wrap</label>
@@ -49,7 +53,7 @@
                     </div>
                 </div>
                 <div class="status-item" onclick="toggleMenu(event, 'lang-menu')">
-                    <span id="lang-display">Plain Text</span>
+                    <span id="lang-display">plaintext</span>
                     <div class="dropdown-menu" id="lang-menu" style="max-height: 400px; overflow-y: auto;"></div>
                 </div>
             </div>
