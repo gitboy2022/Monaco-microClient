@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <style>
+        html, body { height: 100%; margin: 0; display: flex; flex-direction: column; font-family: sans-serif; }
+        #toolbar { padding: 10px; background: #252526; color: #ccc; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #333; }
+        #container { flex-grow: 1; width: 100%; }
+        select { background: #3c3c3c; color: white; border: 1px solid #555; padding: 4px 8px; border-radius: 3px; outline: none; }
+        select:hover { background: #454545; }
+    </style>
+</head>
+<body>
+
+<div id="toolbar">
+    <label for="lang-select">Syntax Highlighting:</label>
+    <select id="lang-select"></select>
+</div>
+
+<div id="container"></div>
+
+<script src="./vs/loader.js"></script>
+
+<script>
+    require.config({ paths: { 'vs': './vs' }});
+
+    require(['vs/editor/editor.main'], function() {
+        // 1. Get all available languages and auto-populate the dropdown
+        const langSelect = document.getElementById('lang-select');
+        const languages = monaco.languages.getLanguages();
+        
+        // Sort and create lowercase options
+        languages
+            .sort((a, b) => a.id.localeCompare(b.id))
+            .forEach(lang => {
+                const option = document.createElement('option');
+                option.value = lang.id;
+                option.textContent = lang.id.toLowerCase(); // Lowercase display
+                langSelect.appendChild(option);
+            });
+
+        // 2. Initialize Models
+        const originalModel = monaco.editor.createModel("// Original side\n", "javascript");
+        const modifiedModel = monaco.editor.createModel("// Modified side\n", "javascript");
+
+        // 3. Initialize Diff Editor
+        const diffEditor = monaco.editor.createDiffEditor(document.getElementById('container'), {
+            theme: 'vs-dark',
+            automaticLayout: true,
+            readOnly: false,
+            originalEditable: true,
+            renderSideBySide: true,
+            scrollbar: { useShadows: false, verticalHasArrows: false, horizontalHasArrows: false }
+        });
+
+        diffEditor.setModel({
+            original: originalModel,
+            modified: modifiedModel
+        });
+
+        // 4. Update language on change
+        langSelect.addEventListener('change', (e) => {
+            const newLang = e.target.value;
+            monaco.editor.setModelLanguage(originalModel, newLang);
+            monaco.editor.setModelLanguage(modifiedModel, newLang);
+        });
+
+        // Set default selector value to match the initial model
+        langSelect.value = "javascript";
+    });
+</script>
+</body>
+</html>
