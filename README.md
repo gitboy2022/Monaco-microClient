@@ -16,7 +16,7 @@ The editor relies on the compiled Monaco core library. Follow these steps to set
 
 ## 📂 Project Structure
 
-Ensure all 7 core items are organized as follows for the internal links to resolve correctly:
+Ensure all 8 core items are organized as follows for the internal links to resolve correctly:
 
 ```text
 Monaco-microClient/
