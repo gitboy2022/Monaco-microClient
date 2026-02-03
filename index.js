@@ -169,7 +169,7 @@ function setIndent(val) {
 }
 
 function openDifferenceViewer() {
-    window.open('Difference Checker.html', '_blank');
+    window.open('Difference-Checker.html', '_blank');
 }
 
 window.onclick = () => document.querySelectorAll('.status-item').forEach(i => i.classList.remove('active-menu'));
