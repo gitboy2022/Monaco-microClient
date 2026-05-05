@@ -1,4 +1,4 @@
-let editor, tabs = [], activeTabId = null;
+let editor, diffEditor, tabs = [], activeTabId = null;
 
 require.config({ paths: { 'vs': './vs' } });
 require(['vs/editor/editor.main'], function () {
@@ -10,7 +10,16 @@ require(['vs/editor/editor.main'], function () {
 });
 
 function initEditor() {
-    editor = monaco.editor.create(document.getElementById('monaco-root'), {
+    const monacoRoot = document.getElementById('monaco-root');
+    const diffRoot = document.createElement('div');
+    diffRoot.id = 'diff-root';
+    diffRoot.style.display = 'none';
+    diffRoot.style.height = '100%';
+    diffRoot.style.width = '100%';
+    diffRoot.style.flex = '1';
+    monacoRoot.insertAdjacentElement('afterend', diffRoot);
+
+    editor = monaco.editor.create(monacoRoot, {
         theme: 'vs-dark',
         automaticLayout: true,
         fontSize: 14,
@@ -18,6 +27,16 @@ function initEditor() {
         wordWrap: 'off',
         minimap: { enabled: true, side: 'right' } // Forced unremovable minimap
     });
+
+    diffEditor = monaco.editor.createDiffEditor(diffRoot, {
+        theme: 'vs-dark',
+        automaticLayout: true,
+        readOnly: false,
+        originalEditable: true,
+        renderSideBySide: true,
+        scrollbar: { useShadows: false, verticalHasArrows: false, horizontalHasArrows: false }
+    });
+
     editor.onDidChangeCursorPosition(e => {
         document.getElementById('cursor-pos').innerText = `Ln ${e.position.lineNumber}, Col ${e.position.column}`;
     });
@@ -47,7 +66,13 @@ function setupLanguageMenu() {
 
 function updateWordWrap() {
     const isWrapped = document.getElementById('word-wrap').checked;
-    editor.updateOptions({ wordWrap: isWrapped ? 'on' : 'off' });
+    const options = { wordWrap: isWrapped ? 'on' : 'off' };
+    const current = tabs.find(t => t.id === activeTabId);
+    if (current && current.isDiff) {
+        diffEditor.updateOptions(options);
+    } else {
+        editor.updateOptions(options);
+    }
 }
 
 function addNewTab(name = "untitled.txt", content = "", language = "plaintext", handle = null) {
@@ -64,17 +89,35 @@ function addNewTab(name = "untitled.txt", content = "", language = "plaintext", 
 
 function switchTab(id) {
     const current = tabs.find(t => t.id === activeTabId);
-    if (current) current.viewState = editor.saveViewState();
+    if (current) {
+        if (current.isDiff) {
+            current.viewState = diffEditor.saveViewState();
+        } else {
+            current.viewState = editor.saveViewState();
+        }
+    }
+
     activeTabId = id;
     const target = tabs.find(t => t.id === id);
-    editor.setModel(target.model);
-    if (target.viewState) editor.restoreViewState(target.viewState);
+
+    if (target.isDiff) {
+        document.getElementById('monaco-root').style.display = 'none';
+        document.getElementById('diff-root').style.display = 'block';
+        diffEditor.setModel({ original: target.originalModel, modified: target.modifiedModel });
+        if (target.viewState) diffEditor.restoreViewState(target.viewState);
+    } else {
+        document.getElementById('diff-root').style.display = 'none';
+        document.getElementById('monaco-root').style.display = 'block';
+        editor.setModel(target.model);
+        if (target.viewState) editor.restoreViewState(target.viewState);
+    }
+
     updateUIForTab(target);
 }
 
 function updateUIForTab(tab) {
     document.getElementById('sb-filename').innerText = tab.name;
-    document.getElementById('lang-display').innerText = tab.model.getLanguageId();
+    document.getElementById('lang-display').innerText = tab.isDiff ? tab.modifiedModel.getLanguageId() : tab.model.getLanguageId();
     document.getElementById('dirty-indicator').style.display = tab.dirty ? 'inline' : 'none';
     renderTabs();
 }
@@ -93,12 +136,18 @@ function closeTab(id, event) {
     if (tabs.length === 1) return;
     const idx = tabs.findIndex(t => t.id === id);
     const [removed] = tabs.splice(idx, 1);
-    removed.model.dispose();
+    if (removed.isDiff) {
+        removed.originalModel.dispose();
+        removed.modifiedModel.dispose();
+    } else {
+        removed.model.dispose();
+    }
     switchTab(tabs[idx] ? tabs[idx].id : tabs[idx - 1].id);
 }
 
 async function adaptiveSave() {
     const current = tabs.find(t => t.id === activeTabId);
+    if (!current || current.isDiff) return;
     if (!current.handle) return saveFileAs("untitled.txt");
     if (document.getElementById('format-on-save').checked) {
         await editor.getAction('editor.action.formatDocument').run();
@@ -115,7 +164,7 @@ async function adaptiveSave() {
 async function autoSaveProcess() {
     if (!document.getElementById('auto-save-toggle').checked) return;
     for (let tab of tabs) {
-        if (tab.dirty && tab.handle) {
+        if (tab.dirty && tab.handle && !tab.isDiff) {
             try {
                 const writable = await tab.handle.createWritable();
                 await writable.write(tab.model.getValue());
@@ -129,6 +178,7 @@ async function autoSaveProcess() {
 
 async function saveFileAs(suggestedName) {
     const current = tabs.find(t => t.id === activeTabId);
+    if (!current || current.isDiff) return;
     try {
         const handle = await window.showSaveFilePicker({ suggestedName: suggestedName || current.name });
         current.handle = handle;
@@ -148,10 +198,14 @@ async function openFile() {
 
 function setLanguage(lang) {
     const current = tabs.find(t => t.id === activeTabId);
-    if (current) {
+    if (!current) return;
+    if (current.isDiff) {
+        monaco.editor.setModelLanguage(current.originalModel, lang);
+        monaco.editor.setModelLanguage(current.modifiedModel, lang);
+    } else {
         monaco.editor.setModelLanguage(current.model, lang);
-        document.getElementById('lang-display').innerText = lang;
     }
+    document.getElementById('lang-display').innerText = lang;
 }
 
 function toggleMenu(e, id) {
@@ -169,7 +223,28 @@ function setIndent(val) {
 }
 
 function openDifferenceViewer() {
-    window.open('Difference-Checker.html', '_blank');
+    const current = tabs.find(t => t.id === activeTabId);
+    if (!current || current.isDiff) return;
+
+    const diffTabName = `Diff: ${current.name}`;
+    const existing = tabs.find(t => t.isDiff && t.name === diffTabName);
+    if (existing) {
+        return switchTab(existing.id);
+    }
+
+    const id = 'tab-' + Date.now();
+    const originalModel = monaco.editor.createModel(current.model.getValue(), current.model.getLanguageId());
+    const modifiedModel = monaco.editor.createModel(current.model.getValue(), current.model.getLanguageId());
+    tabs.push({
+        id,
+        name: diffTabName,
+        isDiff: true,
+        originalModel,
+        modifiedModel,
+        viewState: null,
+        dirty: false
+    });
+    switchTab(id);
 }
 
 window.onclick = () => document.querySelectorAll('.status-item').forEach(i => i.classList.remove('active-menu'));
