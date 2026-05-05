@@ -107,9 +107,14 @@ html {
     align-items: center;
 }
 
-#monaco-root {
+#monaco-root,
+#diff-root {
     flex: 1;
     background: var(--bg);
+}
+
+#diff-root {
+    display: none;
 }
 
 /* Blue Status Bar */
